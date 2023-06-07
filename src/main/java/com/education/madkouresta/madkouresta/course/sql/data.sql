@@ -1,1 +1,0 @@
-Insert into USER_MODEL (AGE,IS_MAIL,NAME) values ('20','True','ahmed');
