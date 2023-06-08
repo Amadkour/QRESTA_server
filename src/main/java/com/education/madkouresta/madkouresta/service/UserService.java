@@ -1,6 +1,8 @@
-package com.education.madkouresta.madkouresta.sec;
+package com.education.madkouresta.madkouresta.service;
 
 import com.education.madkouresta.madkouresta.entity.*;
+import com.education.madkouresta.madkouresta.sec.MyUserDetails;
+import com.education.madkouresta.madkouresta.repo.UserRepository;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.core.userdetails.*;
@@ -29,9 +31,9 @@ public class UserService implements UserDetailsService {
 		return user.map(MyUserDetails::new).get();
 	}
 
-	public void addUser(AppUser user) {
+	public AppUser addUser(AppUser user) {
 		user.setPassword(getPasswordEncoder().encode(user.getPassword()));
-		userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	public List<AppUser> getAllUsers() {
@@ -43,5 +45,4 @@ public class UserService implements UserDetailsService {
 
 		return userRepository.findByUserName(userName);
 	}
-
 }

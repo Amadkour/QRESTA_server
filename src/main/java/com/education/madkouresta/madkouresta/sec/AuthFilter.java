@@ -1,5 +1,6 @@
 package com.education.madkouresta.madkouresta.sec;
 
+import com.education.madkouresta.madkouresta.service.UserService;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.context.*;

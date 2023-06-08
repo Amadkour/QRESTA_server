@@ -1,4 +1,4 @@
-package com.education.madkouresta.madkouresta.sec;
+package com.education.madkouresta.madkouresta.repo;
 
 import com.education.madkouresta.madkouresta.entity.*;
 import org.springframework.data.jpa.repository.*;

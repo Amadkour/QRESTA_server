@@ -10,44 +10,39 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "SEC_USERS")
+@Table(name = "SEC_USER")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 public class AppUser {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id ;
-	@NonNull
-	private String userName ;
-	@JsonIgnore
-	private String password ;
-	private boolean active;
-    private String roles;       // "ADMIN_ROLE" , "USER_ROLE"
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+    @NonNull
+    @Column(unique = true)
+    private String userName;
+    @JsonIgnore
+    private String password;
+    private boolean active;
+    private String role;       // "ADMIN_ROLE" , "USER_ROLE"
     @NonNull
     private String phone;
     @NonNull
     private String mail;
     @NonNull
     private String macAddress;
+    @NonNull
     private boolean isStudent;
-    private boolean isMail;
+    @NonNull
+    private boolean isMale;
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     @ManyToMany
-    @JoinTable(
-            name = "student_course",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id"))
-    Set<Course> studentCourses;
-
+    private Set<Course> courses = new HashSet<>();
     @ManyToMany
-    @JoinTable(
-            name = "student_sessions",
-            joinColumns = @JoinColumn(name = "session_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id"))
-    Set<Session> sessions;
+    private Set<Session> sessions = new HashSet<>();
+
 
     public String getPassword() {
         return password;
@@ -82,12 +77,12 @@ public class AppUser {
         this.active = active;
     }
 
-    public String getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(String roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @NonNull
@@ -125,12 +120,12 @@ public class AppUser {
         isStudent = student;
     }
 
-    public boolean isMail() {
-        return isMail;
+    public boolean isMale() {
+        return isMale;
     }
 
-    public void setMail(boolean mail) {
-        isMail = mail;
+    public void setMale(boolean mail) {
+        isMale = mail;
     }
 
     public Date getCreated() {
@@ -142,11 +137,11 @@ public class AppUser {
     }
 
     public Set<Course> getStudentCourses() {
-        return studentCourses;
+        return courses;
     }
 
     public void setStudentCourses(Set<Course> studentCourses) {
-        this.studentCourses = studentCourses;
+        this.courses = studentCourses;
     }
 
     public Set<Session> getSessions() {
