@@ -1,7 +1,7 @@
 package com.education.madkouresta.madkouresta.entity;
 
-import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -18,22 +18,20 @@ public class Course {
     private long id;
     @NonNull
     private String courseName;
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date startDate;
+    @ManyToOne
+    private AppUser instructor;
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "course_sessions",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "session_id")
-    )
-    private Set<Session> sessions = new HashSet<>();
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "course_students",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "app_user_id")
-    )
     private Set<AppUser> students = new HashSet<>();
+
+    public AppUser getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(AppUser instructor) {
+        this.instructor = instructor;
+    }
 
     public long getId() {
         return id;
@@ -58,14 +56,6 @@ public class Course {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
-    }
-
-    public Set<Session> getSessions() {
-        return sessions;
-    }
-
-    public void setSessions(Set<Session> sessions) {
-        this.sessions = sessions;
     }
 
     public Set<AppUser> getStudents() {

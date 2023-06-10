@@ -5,14 +5,12 @@ import com.education.madkouresta.madkouresta.entity.AppUser;
 import com.education.madkouresta.madkouresta.entity.Course;
 import com.education.madkouresta.madkouresta.entity.Session;
 import com.education.madkouresta.madkouresta.repo.CourseRepository;
-import com.education.madkouresta.madkouresta.repo.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Configuration
 @Service
@@ -21,7 +19,7 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
     @Autowired
-    private SessionRepository sessionRepository;
+    private SessionService sessionService;
     @Autowired
     private UserService userService;
 
@@ -35,7 +33,8 @@ public class CourseService {
         return courses;
     }
 
-    public Course addCourse(Course course) {
+    public Course addCourse(Course course, String instructorUserName) {
+        course.setInstructor(userService.findByUserName(instructorUserName).get());
         return courseRepository.save(course);
     }
 
@@ -48,24 +47,55 @@ public class CourseService {
         return courseRepository.save(course);
 
     }
-    public Course addSessionToCourse(Session session, long courseId) throws Exception {
-        Course course = courseRepository.getOne(courseId);
-        System.out.println(course.getCourseName());
-        Set<Session> sessions = course.getSessions();
-        sessions.add(session);
-        course.setSessions(sessions);
-        return courseRepository.save(course);
 
+    public Session addSessionToCourse(Session session, long courseId) throws Exception {
+        sessionService.createSession(session);
+        session.setCourseId(courseId);
+        return sessionService.createSession(session);
     }
 
 
     public String getSessionCode(long sessionId) {
-        return sessionRepository.getOne(sessionId).getSessionCode();
+        return sessionService.getOne(sessionId).getSessionCode();
     }
 
     public Set<AppUser> getAllStudents(long courseId) {
-        return courseRepository.getOne(courseId).getStudents();
+        return courseRepository.findById(courseId).get().getStudents();
     }
 
 
+    public Optional<Course> getCourse(long courseId) {
+        return courseRepository.findById(courseId);
+    }
+
+    public List<Session> getAllSessions(long courseId) {
+        return sessionService.getAllSessionsByCourseId(courseId);
+    }
+
+    public Set<Course> getAllStudentCourses(String studentUserName) {
+        return courseRepository.findAll().stream().filter(c -> c.getStudents().stream().map(AppUser::getUserName)
+                .collect(Collectors.toList()).contains(studentUserName)).collect(Collectors.toSet());
+    }
+
+    public List<Map<String, Object>> getStudentAttendance(long course_id, long student_id) {
+        List<Session> sessions = getAllSessions(course_id);
+        List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
+        AppUser user = userService.findById(student_id);
+        for (Session session : sessions) {
+            Set<AppUser> users = new HashSet<>();
+            Map<String, Object> map = session.toMap();
+            if (session.getStudents().stream().anyMatch(s -> s.getId() == student_id)) {
+                users.add(user);
+                map.put("attendance", true);
+            } else {
+                map.put("attendance", false);
+            }
+            map.remove("students");
+            map.remove("courseId");
+            map.remove("createAt");
+            maps.add(map);
+
+        }
+        return maps;
+    }
 }

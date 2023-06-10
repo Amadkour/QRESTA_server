@@ -3,6 +3,7 @@ package com.education.madkouresta.madkouresta.entity;
 import com.education.madkouresta.madkouresta.entity.*;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.lang.*;
 import org.springframework.lang.NonNull;
 
@@ -36,12 +37,8 @@ public class AppUser {
     private boolean isStudent;
     @NonNull
     private boolean isMale;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
-    @ManyToMany
-    private Set<Course> courses = new HashSet<>();
-    @ManyToMany
-    private Set<Session> sessions = new HashSet<>();
+    @CreationTimestamp
+    private Date createdAt;
 
 
     public String getPassword() {
@@ -129,26 +126,11 @@ public class AppUser {
     }
 
     public Date getCreated() {
-        return created;
+        return createdAt;
     }
 
     public void setCreated(Date created) {
-        this.created = created;
+        this.createdAt = created;
     }
 
-    public Set<Course> getStudentCourses() {
-        return courses;
-    }
-
-    public void setStudentCourses(Set<Course> studentCourses) {
-        this.courses = studentCourses;
-    }
-
-    public Set<Session> getSessions() {
-        return sessions;
-    }
-
-    public void setSessions(Set<Session> sessions) {
-        this.sessions = sessions;
-    }
 }

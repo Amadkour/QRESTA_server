@@ -1,14 +1,16 @@
 package com.education.madkouresta.madkouresta.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 
 @Entity
-@Table(name = "COURSE")
+@Table(name = "SESSION")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,16 +18,25 @@ public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
+   @JsonIgnore
     private String sessionCode;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean locked;
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @CreationTimestamp
     private Date createAt;
-    @ManyToMany( cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<AppUser> students;
+    @NotNull
+    private long courseId;
 
-    @ManyToOne
-    private Course course;
+    public long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(long courseId) {
+        this.courseId = courseId;
+    }
 
     public long getId() {
         return id;
@@ -59,11 +70,23 @@ public class Session {
         this.students = students;
     }
 
-    public Course getCourse() {
-        return course;
+    public Boolean getLocked() {
+        return locked;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("sessionCode", sessionCode);
+        map.put("locked", locked);
+        map.put("createAt", createAt);
+        map.put("students", students);
+        map.put("courseId", courseId);
+        return map;
     }
 }
